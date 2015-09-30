@@ -29,10 +29,14 @@ public class TimestampTransactionEventHandler<T> implements
 
 
   private boolean addCreated = false;
+  private List<RelationshipType> skipEndNodeUpdateOnNewRelationshipsFor = null;
   private List<TimestampCustomPropertyHandler> customPropertyHandlers = null;
   
-  public TimestampTransactionEventHandler(boolean addCreated, List<TimestampCustomPropertyHandler> customPropertyHandlers) {
+  public TimestampTransactionEventHandler(boolean addCreated,
+		  List<RelationshipType> skipEndNodeUpdateOnNewRelationshipsFor,
+		  List<TimestampCustomPropertyHandler> customPropertyHandlers) {
 	this.addCreated = addCreated;
+	this.skipEndNodeUpdateOnNewRelationshipsFor = skipEndNodeUpdateOnNewRelationshipsFor;
 	this.customPropertyHandlers = customPropertyHandlers;
   }
 
@@ -58,8 +62,19 @@ public class TimestampTransactionEventHandler<T> implements
     for (Relationship relationship : createdRelationships) {
       if (updatedPropertyContainers == null)
         updatedPropertyContainers = new HashSet<PropertyContainer>();
-      updatedPropertyContainers.add(relationship.getEndNode());
       updatedPropertyContainers.add(relationship.getStartNode());
+      // Go through the limitations and only update end node if current relationship is not in the set
+      boolean skipEndNodeUpdate = false;
+      if (skipEndNodeUpdateOnNewRelationshipsFor != null && !skipEndNodeUpdateOnNewRelationshipsFor.isEmpty()){
+        for (RelationshipType skipUpdateRelationshipType : skipEndNodeUpdateOnNewRelationshipsFor){
+          if (relationship.isType(skipUpdateRelationshipType)){
+        	skipEndNodeUpdate = true;
+            break;
+          }
+        }
+      }
+      if (!skipEndNodeUpdate)
+        updatedPropertyContainers.add(relationship.getEndNode());
     }
     updateTimestampsFor(updatedPropertyContainers, currentTime);
     updateTimestampsFor(createdRelationships, currentTime);
