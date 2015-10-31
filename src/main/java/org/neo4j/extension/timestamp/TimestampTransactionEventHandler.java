@@ -47,8 +47,10 @@ public class TimestampTransactionEventHandler<T> implements
     updateParentTimestampsFor(data.assignedNodeProperties(), currentTime);
 
     // With removed properties, don't update when node is being deleted
-    updateRemoveTimestampsFor(data.removedRelationshipProperties(), data.deletedRelationships(), currentTime);
-    updateRemoveTimestampsFor(data.removedNodeProperties(), data.deletedNodes(), currentTime);
+    Set<Relationship> deletedRelationships = relationshipsToSet(data.deletedRelationships());
+    updateRemoveTimestampsFor(data.removedRelationshipProperties(), deletedRelationships, currentTime);    
+    Set<Node> deletedNodes = nodesToSet(data.deletedNodes());
+    updateRemoveTimestampsFor(data.removedNodeProperties(), deletedNodes, currentTime);
 
     updateTimestampsFor(data.createdNodes(), currentTime);
 
@@ -87,7 +89,8 @@ public class TimestampTransactionEventHandler<T> implements
     if (customPropertyHandlers != null && !customPropertyHandlers.isEmpty()){
     	for (TimestampCustomPropertyHandler cpr : customPropertyHandlers){
     		for (PropertyEntry<Node> assignedProperty : data.assignedNodeProperties()){
-    			if (cpr.getCustomPropertyName() == assignedProperty.key()){
+    			if ((deletedNodes == null || !deletedNodes.contains(assignedProperty.entity())) &&
+    				cpr.getCustomPropertyName() == assignedProperty.key()){
     				// Assigned custom property found, process modifications
     				updateCustomRelationshipModifiedTimestampsFor(
     						assignedProperty.entity(),
@@ -98,7 +101,8 @@ public class TimestampTransactionEventHandler<T> implements
     			}
     		}
     		for (PropertyEntry<Node> removedProperty : data.removedNodeProperties()){
-    			if (cpr.getCustomPropertyName() == removedProperty.key()){
+    			if ((deletedNodes == null || !deletedNodes.contains(removedProperty.entity())) &&
+        			cpr.getCustomPropertyName() == removedProperty.key()){
     				// Removed custom property found, process modifications to relationships
     				updateCustomRelationshipModifiedTimestampsFor(
     						removedProperty.entity(),
@@ -134,12 +138,11 @@ public class TimestampTransactionEventHandler<T> implements
       updateTimestampsFor(updatedPropertyContainers, currentTime);
   }
 
-  private void updateRemoveTimestampsFor(Iterable<? extends PropertyEntry<?>> propertyEntries, Iterable<? extends PropertyContainer> deletedPropertyContainers, long currentTime) {
+  private void updateRemoveTimestampsFor(Iterable<? extends PropertyEntry<?>> propertyEntries, Set<? extends PropertyContainer> deletedPropertyContainers, long currentTime) {
     if (propertyEntries == null) return;
     Set<PropertyContainer> updatedPropertyContainers = null;
     for (PropertyEntry<?> propertyEntry : propertyEntries) {
-      Set<?> deletedPropertyContainerSet = propertyContainersToSet(deletedPropertyContainers);
-      if (deletedPropertyContainerSet == null || !deletedPropertyContainerSet.contains(propertyEntry.entity())){
+      if (deletedPropertyContainers == null || !deletedPropertyContainers.contains(propertyEntry.entity())){
         if (updatedPropertyContainers == null)
           updatedPropertyContainers = new HashSet<PropertyContainer>();
         updatedPropertyContainers.add(propertyEntry.entity());
@@ -195,17 +198,29 @@ public class TimestampTransactionEventHandler<T> implements
 	  
   }
 
-  private Set<?> propertyContainersToSet(Iterable<? extends PropertyContainer> propertyContainers){
-    if (propertyContainers == null) return null;
-    Set<PropertyContainer> propertyContainerSet = null;
-    for (PropertyContainer propertyContainer : propertyContainers){
-      if (propertyContainerSet == null)
-        propertyContainerSet = new HashSet<PropertyContainer>();
-      propertyContainerSet.add(propertyContainer);
+  private Set<Relationship> relationshipsToSet(Iterable<Relationship> relationships){
+    if (relationships == null) return null;
+    Set<Relationship> relationshipSet = null;
+    for (Relationship relationship : relationships){
+      if (relationshipSet == null)
+    	  relationshipSet = new HashSet<Relationship>();
+      relationshipSet.add(relationship);
     }
-    return propertyContainerSet;
+    return relationshipSet;
+  }
+  
+  private Set<Node> nodesToSet(Iterable<Node> nodes){
+    if (nodes == null) return null;
+    Set<Node> nodeSet = null;
+    for (Node node : nodes){
+      if (nodeSet == null)
+    	  nodeSet = new HashSet<Node>();
+      nodeSet.add(node);
+    }
+    return nodeSet;
   }
 
+  
   private void updateTimestampsFor(Iterable<? extends PropertyContainer> propertyContainers, long currentTime) {
     if (propertyContainers == null) return;
     for (PropertyContainer propertyContainer : propertyContainers) {
