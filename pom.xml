@@ -6,7 +6,7 @@
   <artifactId>neo4j-timestamp</artifactId>
   <packaging>jar</packaging>
   <name>Neo4j Timestamp</name>
-  <version>2.3.2</version>
+  <version>3.0.0</version>
   <description>Neo4j Timestamp</description>
   <url>https://github.com/extendedmind/neo4j-timestamp</url>
   <inceptionYear>2013</inceptionYear>
@@ -76,10 +76,10 @@
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.0</version>
+        <version>3.5.1</version>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.8</source>
+          <target>1.8</target>
         </configuration>
         <executions>
           <execution>

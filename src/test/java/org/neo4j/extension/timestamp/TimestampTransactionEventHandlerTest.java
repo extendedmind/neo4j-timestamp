@@ -1,23 +1,17 @@
 package org.neo4j.extension.timestamp;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Test;
+import org.neo4j.extension.timestamp.TimestampTransactionEventHandler;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.factory.GraphDatabaseFactory;
-import org.neo4j.kernel.extension.KernelExtensionFactory;
 
-public class TimestampKernelExtensionTest extends TimestampTestBase {
+public class TimestampTransactionEventHandlerTest extends TimestampTestBase {
 
   @Test
   public void shouldCreateAndUpdateTimestamp() {    
-    List<KernelExtensionFactory<?>> extensions = new ArrayList<KernelExtensionFactory<?>>(1); 
-    extensions.add(new TimestampKernelExtensionFactory(true, false));
     GraphDatabaseService graphdb = new GraphDatabaseFactory()
-        .addKernelExtensions(extensions)
-        .newEmbeddedDatabaseBuilder(TEST_DATA_STORE_DESTINATION)
-        .newGraphDatabase();
+      .newEmbeddedDatabaseBuilder(new java.io.File(TEST_DATA_STORE_DESTINATION)).newGraphDatabase();
+    graphdb.registerTransactionEventHandler(new TimestampTransactionEventHandler<Long>(true, null, null));
 
     long createdNodeId = super.checkTimestampCreation(graphdb);
     super.checkTimestampUpdateOnPropertyAdd(graphdb, createdNodeId);
