@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>org.extendedmind</groupId>
   <artifactId>neo4j-timestamp</artifactId>
   <packaging>jar</packaging>
   <name>Neo4j Timestamp</name>
-  <version>3.1.0</version>
+  <version>3.1.3</version>
   <description>Neo4j Timestamp</description>
   <url>https://github.com/extendedmind/neo4j-timestamp</url>
   <inceptionYear>2013</inceptionYear>
@@ -38,7 +38,7 @@
   </repositories>
 
   <dependencies>
-  
+
     <!-- Neo4j graph database -->
     <dependency>
       <groupId>org.neo4j</groupId>
@@ -67,7 +67,7 @@
       <groupId>org.neo4j.app</groupId>
       <artifactId>neo4j-server</artifactId>
       <version>${neo4j.version}</version>
-      <scope>test</scope>    
+      <scope>test</scope>
     </dependency>
 
   </dependencies>
