@@ -6,7 +6,7 @@
   <artifactId>neo4j-timestamp</artifactId>
   <packaging>jar</packaging>
   <name>Neo4j Timestamp</name>
-  <version>3.1.2</version>
+  <version>3.3.1</version>
   <description>Neo4j Timestamp</description>
   <url>https://github.com/extendedmind/neo4j-timestamp</url>
   <inceptionYear>2013</inceptionYear>
@@ -121,14 +121,14 @@
       <uniqueVersion>false</uniqueVersion>
       <id>extendedmind-releases</id>
       <name>Extended Mind Releases</name>
-      <url>https://ci.ext.md/nexus/content/repositories/releases</url>
+      <url>https://nexus.extendedmind.org/repository/releases</url>
       <layout>default</layout>
     </repository>
     <snapshotRepository>
       <uniqueVersion>true</uniqueVersion>
       <id>extendedmind-snapshots</id>
       <name>Extended Mind Snapshots</name>
-      <url>https://ci.ext.md/nexus/content/repositories/snapshots</url>
+      <url>https://nexus.extendedmind.org/repository/snapshots</url>
       <layout>default</layout>
     </snapshotRepository>
   </distributionManagement>
